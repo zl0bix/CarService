@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,6 +28,7 @@ namespace CarService
             BMW bmw = new BMW();
             Servis servis = new Servis();
             servis.GetWork(bmw.GetQueueCars());
+            Console.WriteLine(Servis.money);
             
         }
     }
@@ -66,54 +68,86 @@ namespace CarService
     class Servis
     {
         public static int money = 1000;
-        
-        public List<string> GetWork(List<string>cars)
-        {   Sklad sklad = new Sklad();
-            List<string> detals = sklad.GetDetalsToSklad();
 
-            while (cars.Count > 0 && detals.Count > 0 && money > 0)
+        public List<string> GetWork(List<string> cars)
+        {
+            try
             {
-                Console.WriteLine("Ваши деньги - " + money);
-                Console.Write("Машина приехала с такими дефектами -> ");
-                ShowListLine(cars);
-                Console.WriteLine("Товары на складе:");
-                ShowListRow(detals);
-                Console.WriteLine("Нажмите любую клавишу для запуска сервиса!!!");
-
-                if (detals.Count > 0 && cars.Count > 0)
+                Sklad sklad = new Sklad();
+                List<string> detals = sklad.GetDetalsToSklad();
+                bool isSpin = true;
+                while (detals.Count > 0 & money > 0 & isSpin)
                 {
-                    detals.RemoveAt(detals.IndexOf(cars.First()));
+                    Console.WriteLine("Ваши деньги - " + money);
+                    Console.Write("Машина приехала с такими дефектами -> ");
+                    ShowListLine(cars);
+                    Console.WriteLine("Товары на складе:");
+                    ShowListRow(detals);
+                    Console.WriteLine("Нажмите любую клавишу для запуска сервиса!!!");
 
-                    cars.RemoveAt(cars.IndexOf(cars.First()));
+                    if (cars.Count != 0 && detals.Contains(cars[0]))
+                    {
+                        detals.Remove(cars.First());
+
+                        cars.Remove(cars.First());
+
+                        money += 10;
+                        Console.WriteLine("if+");
+                    }
+                    else if (cars.Count > 0 && detals.Contains(cars[0]))
+                    {
+                        money -= 100;
+                        Console.WriteLine("Не хватило зап частей!!!Переходим к следующей машине!!!");                      
+                        return detals;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Переходим к следующей машине!!!");
+
+                        
+
+                        //isSpin = false;
+                        Console.WriteLine("if-");
+                        return detals;
+                    }
+                    Console.ReadKey();
+                    Console.Clear();
+
+                    Console.WriteLine("while+");
+
+
+                    Console.WriteLine("while-");
+
 
                 }
-                else
-                {
-                    Console.WriteLine("Переходим к следующей машине!!!");
-
-                }
-                Console.ReadKey();
-                Console.Clear();
-
-                
-
+            }          
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + "\n" + ex.Source + "\n" + ex.HelpLink + "\n" + ex.TargetSite + "\n" + ex.ToString());                
             }
-
-            return detals;
-
+            return new List<string>(11);
         }
+    
 
         public void ShowListLine(List<string> values)
         {
-           foreach (string iterator in values)
+            if (values.Count != 0)
+            {
+                foreach (string iterator in values)
 
-                Console.Write(iterator + " ");
+                    Console.Write(iterator + " ");
+            }
+            else Console.WriteLine("List is empty");
         }
         public void ShowListRow(List<string> values)
         {
-            foreach (string iterator in values)
+            if (values.Count != 0)
+            {
+                foreach (string iterator in values)
 
-                Console.WriteLine(iterator);
+                    Console.WriteLine(iterator);
+            }
+            else Console.WriteLine("List is empty");
         }
 
     }
@@ -124,7 +158,7 @@ namespace CarService
         public List<string> GetDetalsToSklad()
         {
             List<string> _servisDetals = new List<string>();
-            int numTmp = Program._Rnd.Next(11,21);
+            int numTmp = Program._Rnd.Next(7,12);
 
             while(numTmp != 0)
             {
