@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,9 +26,16 @@ namespace CarService
             При необходимости можно создать дополнительный класс для конкретной детали и работе с количеством.*/
            
             Sklad sklad = new Sklad();
+            List<string> _work = null;
             BMW bmw = new BMW();
+            Volkswagen volkswagen = new Volkswagen();
+            Mercedes mercedes = new Mercedes();
+
             Servis servis = new Servis();
-            servis.GetWork(bmw.GetQueueCars());
+
+            _work = servis.GetWork(bmw.GetQueueCars());
+            //servis.GetWork(volkswagen.GetQueueCars());
+            //servis.GetWork(mercedes.GetQueueCars());
             Console.WriteLine(Servis.money);
             
         }
@@ -71,17 +79,21 @@ namespace CarService
 
         public List<string> GetWork(List<string> cars)
         {
-            try
-            {
+            
                 Sklad sklad = new Sklad();
+                
                 List<string> detals = sklad.GetDetalsToSklad();
+
+                int numTmp = detals.Count - cars.Count;
+
                 bool isSpin = true;
+
                 while (detals.Count > 0 & money > 0 & isSpin)
                 {
                     Console.WriteLine("Ваши деньги - " + money);
                     Console.Write("Машина приехала с такими дефектами -> ");
                     ShowListLine(cars);
-                    Console.WriteLine("Товары на складе:");
+                    Console.WriteLine("\nТовары на складе:");
                     ShowListRow(detals);
                     Console.WriteLine("Нажмите любую клавишу для запуска сервиса!!!");
 
@@ -92,43 +104,28 @@ namespace CarService
                         cars.Remove(cars.First());
 
                         money += 10;
-                        Console.WriteLine("if+");
+                        
+                            if (cars.Count == 0) { return detals; }                               
                     }
-                    else if (cars.Count > 0 && detals.Contains(cars[0]))
+                    else if (!detals.Contains(cars[0]))
                     {
                         money -= 100;
-                        Console.WriteLine("Не хватило зап частей!!!Переходим к следующей машине!!!");                      
+                        Console.WriteLine("Не хватило зап частей!!!Переходим к следующей машине!!!");
+                                                
                         return detals;
                     }
                     else
                     {
-                        Console.WriteLine("Переходим к следующей машине!!!");
-
-                        
-
-                        //isSpin = false;
-                        Console.WriteLine("if-");
+                        Console.WriteLine("Переходим к следующей машине!!!");                                              
+                       
                         return detals;
                     }
                     Console.ReadKey();
-                    Console.Clear();
-
-                    Console.WriteLine("while+");
-
-
-                    Console.WriteLine("while-");
-
-
-                }
-            }          
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message + "\n" + ex.Source + "\n" + ex.HelpLink + "\n" + ex.TargetSite + "\n" + ex.ToString());                
-            }
-            return new List<string>(11);
+                    Console.Clear();                                
+                } 
+                return detals;
         }
     
-
         public void ShowListLine(List<string> values)
         {
             if (values.Count != 0)
@@ -158,7 +155,7 @@ namespace CarService
         public List<string> GetDetalsToSklad()
         {
             List<string> _servisDetals = new List<string>();
-            int numTmp = Program._Rnd.Next(7,12);
+            int numTmp = Program._Rnd.Next(12,22);
 
             while(numTmp != 0)
             {
